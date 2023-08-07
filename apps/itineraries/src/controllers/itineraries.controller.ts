@@ -43,4 +43,17 @@ export class ItineratiesController {
 
     return this.itineratiesService.findAllItineraries(payload);
   }
+
+  @MessagePattern({ cmd: 'occupy-seats' })
+  async occupySeats(
+    @Ctx() ctx,
+    @Payload() payload: { seats: number[]; itineraryId: number },
+  ) {
+    this.sharedService.acknowledgeMessage(ctx);
+
+    return this.itineratiesService.occupySeats(
+      payload.seats,
+      payload.itineraryId,
+    );
+  }
 }

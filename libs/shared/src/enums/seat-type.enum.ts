@@ -1,5 +1,5 @@
 export enum SeatType {
-  TURISTA = 'turista',
-  EJECUTIVO = 'ejecutivo',
+  TURISTA = 'tourist',
+  EJECUTIVO = 'executive',
   PREMIUM = 'premium',
 }

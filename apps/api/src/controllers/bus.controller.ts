@@ -5,6 +5,7 @@ import {
   Post,
   Body,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { CreateBusDto } from 'apps/itineraries/src/dto/create-bus.dto';
@@ -38,6 +39,16 @@ export class BusController {
       'createBus',
       createBusDto,
     );
+  }
+
+  @Get()
+  @ApiOperation({
+    summary: 'Get all buses',
+    description:
+      'This endpoint is used to get all buses. Only users with the role ONROAD can access this endpoint.',
+  })
+  async getAll() {
+    return sendMicroserviceMessage(this.itinerariesService, 'getAllBuses', {});
   }
 
   @Patch('/update')

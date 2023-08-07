@@ -35,4 +35,8 @@ export class OperatorService implements OperatorServiceInterface {
   async getOperator(id: number): Promise<OperatorEntity> {
     return this.operatorRepository.findOneById(id);
   }
+
+  async getAllOperators(): Promise<OperatorEntity[]> {
+    return this.operatorRepository.findAll();
+  }
 }

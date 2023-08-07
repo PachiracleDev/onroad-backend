@@ -8,6 +8,8 @@ import { MessageEntity } from '@app/shared/entities/message.entity';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { UserEntity } from '@app/shared/entities/user.entity';
+import { GetOldMessagesDto } from './dto/get-old-messages.dto';
+import { LessThan } from 'typeorm';
 
 @Injectable()
 export class ChatService implements ChatServiceInterface {
@@ -75,17 +77,45 @@ export class ChatService implements ChatServiceInterface {
     });
   }
 
-  async getConversations(userId: number): Promise<any[]> {
-    const result = await this.conversationRepository.getConversations(userId);
-    console.log('XD AQUI', result);
+  async getOldMessages(dto: GetOldMessagesDto, userId: number) {
+    const messages = await this.messageRepository.findAll({
+      where: {
+        conversation: {
+          id: +dto.conversationId,
+        },
+        ...(dto.lastId !== 'undefined' && {
+          id: LessThan(+dto.lastId),
+        }),
+      },
+      relations: ['user'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
 
-    return result.map((conv) => ({
-      id: conv.id,
-      userIds: conv.users.map((user) => ({
-        id: user.id,
-        name: user.name,
-      })),
-      lastUpdated: conv.lastUpdated,
+    return messages.reverse().map((m) => ({
+      conversationId: dto.conversationId,
+      createdAt: m.createdAt,
+      message: m.message,
+      id: m.id,
+      me: m.user.id === userId,
     }));
+  }
+
+  async getConversations(userId: number): Promise<any[]> {
+    const result = await this.conversationRepository.getConversations();
+
+    return result
+      .filter((conv) => conv.users.map((u) => u.id).includes(userId))
+      .map((conv) => ({
+        id: conv.id,
+        userIds: conv.users
+          .filter((conv) => conv.id !== userId)
+          .map((user) => ({
+            id: user.id,
+            name: user.name,
+          })),
+        lastUpdated: conv.lastUpdated,
+      }));
   }
 }

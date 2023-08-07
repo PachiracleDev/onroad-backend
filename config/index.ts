@@ -14,6 +14,20 @@ export default registerAs('config', () => ({
   rabbitmq: {
     uri: process.env.RABBITMQ_URI,
   },
+  stripe: {
+    secretKey: process.env.STRIPE_SECRET_KEY,
+  },
+  aws: {
+    s3: {
+      region: process.env.S3_UPLOAD_REGION,
+      bucketName: process.env.S3_UPLOAD_BUCKET,
+      accessKeyId: process.env.S3_UPLOAD_KEY_ID,
+      secretAccessKey: process.env.S3_UPLOAD_SECRET,
+    },
+    cloudfront: {
+      domain: process.env.CLOUDFRONT_DOMAIN,
+    },
+  },
   queues: {
     auth: process.env.RABBITMQ_AUTH_QUEUE,
     chat: process.env.RABBITMQ_CHAT_QUEUE,

@@ -9,6 +9,7 @@ import { CartItemEntity } from '@app/shared/entities/cart-item.entity';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { sendMicroserviceMessage } from '@app/shared/utils/send-message-microservice';
+import { ItineraryEntity } from '@app/shared/entities/itineraries.entity';
 
 @Injectable()
 export class CartService implements CarServiceInterface {
@@ -25,11 +26,26 @@ export class CartService implements CarServiceInterface {
       where: {
         user: userId as any,
       },
-      relations: ['items', 'items.itinerarie'],
+      relations: ['items', 'items.itinerarie', 'items.itinerarie.bus'],
     });
     if (!cart) {
       return await this.createCart(userId);
     }
+
+    cart.items = cart.items.map((item) => ({
+      ...item,
+      itinerarie: {
+        id: item.itinerarie.id,
+        closingTime: item.itinerarie.closingTime,
+        openingTime: item.itinerarie.openingTime,
+        baseTicketPrice: item.itinerarie.baseTicketPrice,
+        origin: item.itinerarie.origin,
+        destination: item.itinerarie.destination,
+        porcentageIncreaseSeatType:
+          item.itinerarie.bus.porcentageIncreaseSeatType,
+      },
+    }));
+
     return cart;
   }
 
@@ -50,20 +66,25 @@ export class CartService implements CarServiceInterface {
       { id: dto.itemId },
     );
 
-    const result = await firstValueFrom(obs);
-    if (result?.status === 'error') {
-      throw new RpcException(result.message);
+    const result = (await firstValueFrom(obs)) as ItineraryEntity | null;
+    if (!result) {
+      throw new RpcException('El itinerario no existe');
     }
 
-    if (result.availableSeats < dto.quantity) {
-      throw new RpcException('No hay suficientes asientos disponibles');
-    }
+    result.seats.map((seat) => {
+      dto.seats.map((seat2) => {
+        if (seat.number === seat2.number) {
+          if (seat.occupied === true) {
+            throw new RpcException(`El asiento ${seat.number} ya está ocupado`);
+          }
+        }
+      });
+    });
 
     await this.cartItemRepository.save({
       cart,
       itinerarie: result as any,
-      seatType: dto.seatType,
-      quantity: dto.quantity,
+      seats: dto.seats,
     });
 
     const newCart = await this.getCart(userId);
@@ -78,7 +99,9 @@ export class CartService implements CarServiceInterface {
     const cart = await this.getCart(userId);
     const item = await this.cartItemRepository.findByCondition({
       where: {
-        cart: cart.id as any,
+        cart: {
+          id: cart.id,
+        },
         id: dto.itemId as any,
       },
     });
@@ -93,7 +116,9 @@ export class CartService implements CarServiceInterface {
   async clearCart(userId: number): Promise<boolean> {
     const cart = await this.getCart(userId);
     await this.cartItemRepository.deleteMany({
-      cart: cart.id as any,
+      cart: {
+        id: cart.id,
+      },
     });
     return true;
   }

@@ -7,9 +7,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ItineraryEntity } from './itineraries.entity';
-import { SeatType } from '../enums/seat-type.enum';
 import { UserEntity } from './user.entity';
 import { ReservationStatus } from '../enums/reservation-status.enum';
+import { Seat } from 'apps/itineraries/src/dto/create-bus.dto';
 
 @Entity('reservations')
 export class ReservationEntity {
@@ -20,17 +20,16 @@ export class ReservationEntity {
   @JoinColumn()
   itinerary: ItineraryEntity;
 
-  @Column({
-    name: 'ticket_id',
-    unique: true,
-  })
+  @Column()
+  qrCodeImage: string;
+
+  @Column()
   ticketId: string;
 
   @Column({
-    type: 'enum',
-    enum: SeatType,
+    type: 'jsonb',
   })
-  seatType: SeatType;
+  seats: Seat[];
 
   @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn()
@@ -42,9 +41,6 @@ export class ReservationEntity {
     default: ReservationStatus.PENDING,
   })
   status: ReservationStatus;
-
-  @Column()
-  quantity: number;
 
   @CreateDateColumn({
     name: 'created_at',

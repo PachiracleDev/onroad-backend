@@ -46,6 +46,12 @@ export class OperatorsController {
     return await this.operatorService.deleteOperator(payload.id);
   }
 
+  @MessagePattern({ cmd: 'getAllOperators' })
+  async getAllOperators(@Ctx() ctx: RmqContext): Promise<OperatorEntity[]> {
+    this.sharedService.acknowledgeMessage(ctx);
+    return await this.operatorService.getAllOperators();
+  }
+
   @MessagePattern({ cmd: 'getOperator' })
   async getOperator(
     @Payload() payload: { id: number },

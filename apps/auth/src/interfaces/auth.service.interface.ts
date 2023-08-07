@@ -15,4 +15,5 @@ export interface AuthServiceInterface {
   doesPasswordMatch(password: string, hashedPassword: string): Promise<boolean>;
   getOnroadsTeam(userId: number): Promise<UserEntity[]>;
   getUserById(id: number): Promise<UserEntity>;
+  getProfile(userId: number): Promise<UserEntity>;
 }

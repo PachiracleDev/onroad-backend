@@ -20,7 +20,14 @@ export class BusService implements BusServiceInterface {
     if (!operator) {
       throw new RpcException('Operator not found');
     }
+
     return this.busRepository.save({ ...dto, operator });
+  }
+
+  async getAllBuses(): Promise<BusEntity[]> {
+    return await this.busRepository.findAll({
+      relations: ['operator'],
+    });
   }
 
   async updateBus(dto: UpdateBusDto): Promise<BusEntity> {

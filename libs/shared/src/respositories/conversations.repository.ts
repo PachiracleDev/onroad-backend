@@ -17,11 +17,10 @@ export class ConversationRepository
     super(conversationRepository);
   }
 
-  async getConversations(userId: number): Promise<ConversationEntity[]> {
+  async getConversations(): Promise<ConversationEntity[]> {
     return await this.conversationRepository
       .createQueryBuilder('conversations')
       .leftJoinAndSelect('conversations.users', 'users')
-      .where('users.id <> :userId', { userId })
       .orderBy('conversations.lastUpdated', 'DESC')
       .getMany();
   }

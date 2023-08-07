@@ -8,6 +8,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const sharedService = app.get(SharedService);
 
+  app.enableCors();
+
   const QUEUE = configService.get('RABBITMQ_CHAT_QUEUE');
 
   app.connectMicroservice(sharedService.getRmqOptions(QUEUE));

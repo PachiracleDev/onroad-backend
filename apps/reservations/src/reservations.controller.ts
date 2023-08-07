@@ -9,6 +9,7 @@ import {
 import { SharedServiceInterface } from '@app/shared/interfaces/services/shared.service.interface';
 import { ReservationServiceInterface } from '../interfaces/reservation.service.interface';
 import { ReservationEntity } from '@app/shared/entities/reservation.entity';
+import { ItemCart } from 'apps/api/src/dto/create-payment-intent.dto';
 
 @Controller()
 export class ReservationsController {
@@ -22,10 +23,13 @@ export class ReservationsController {
   @MessagePattern({ cmd: 'create-reservation' })
   async createReservation(
     @Ctx() ctx: RmqContext,
-    @Payload() payload: { userId: number },
+    @Payload() payload: { userId: number; items: ItemCart[] },
   ): Promise<ReservationEntity[]> {
     this.sharedService.acknowledgeMessage(ctx);
-    return this.reservationService.createReservation(payload.userId);
+    return this.reservationService.createReservation(
+      payload.userId,
+      payload.items,
+    );
   }
 
   @MessagePattern({ cmd: 'get-my-reservations' })

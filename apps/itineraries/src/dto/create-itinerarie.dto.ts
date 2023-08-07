@@ -1,11 +1,4 @@
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateItinerarieDto {
@@ -22,14 +15,7 @@ export class CreateItinerarieDto {
   @IsNotEmpty()
   @IsNumber()
   @ApiProperty({ required: true, type: 'number' })
-  ticketPrice: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(20)
-  @Max(35)
-  @ApiProperty({ required: true, type: 'number' })
-  maxCapacity: number;
+  baseTicketPrice: number;
 
   @IsNotEmpty()
   @IsString()

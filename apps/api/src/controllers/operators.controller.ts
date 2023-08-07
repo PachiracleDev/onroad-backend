@@ -9,6 +9,7 @@ import {
   Delete,
   Param,
   UseGuards,
+  Get,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Roles } from 'apps/auth/src/decorators/roles.decorator';
@@ -53,6 +54,20 @@ export class OperatorsController {
       this.itinerariesService,
       'updateOperator',
       updateOperatorDto,
+    );
+  }
+
+  @Get()
+  @ApiOperation({
+    summary: 'Get all operators',
+    description:
+      'This endpoint is used to get all operators. Only users with the role ONROAD can access this endpoint.',
+  })
+  async getAll() {
+    return sendMicroserviceMessage(
+      this.itinerariesService,
+      'getAllOperators',
+      {},
     );
   }
 

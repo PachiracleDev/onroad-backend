@@ -77,7 +77,10 @@ export class PresenceGateway
   }
 
   async handleConnection(socket: Socket) {
-    const jwt = socket.handshake.headers.authorization.split(' ')[1] ?? null;
+    //?ESTO PARA CUANDO ESTES USANDO SOCKET-IO-CLIENT EN EL FRONTEND
+    const jwt = socket.handshake.auth.access;
+    //??ESTO PARA POSTMAN
+    // const jwt = socket.handshake.headers?.authorization.split(' ')[1] ?? null;
     if (!jwt) {
       this.handleDisconnect(socket);
       return;

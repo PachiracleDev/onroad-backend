@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { CartEntity } from './cart.entity';
 import { ItineraryEntity } from './itineraries.entity';
-import { SeatType } from '../enums/seat-type.enum';
+import { Seat } from 'apps/itineraries/src/dto/create-bus.dto';
 
 @Entity('cart_items')
 export class CartItemEntity {
@@ -23,13 +23,7 @@ export class CartItemEntity {
   itinerarie: ItineraryEntity;
 
   @Column({
-    type: 'int',
+    type: 'jsonb',
   })
-  quantity: number;
-
-  @Column({
-    type: 'enum',
-    enum: SeatType,
-  })
-  seatType: SeatType;
+  seats: Seat[];
 }

@@ -39,114 +39,114 @@ services:
     volumes:
       - ./redis/data:/data
 
-  auth:
-    build:
-      context: ./
-      dockerfile: ./apps/auth/Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - postgres
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev auth # overrides CMD from dockerfile
+  # auth:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/auth/Dockerfile
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgres
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev auth # overrides CMD from dockerfile
 
-  presence:
-    build:
-      context: ./
-      dockerfile: ./apps/presence/Dockerfile
-    ports:
-      - '6000:6000'
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - postgres
-      - redis
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev presence # overrides CMD from dockerfile
+  # presence:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/presence/Dockerfile
+  #   ports:
+  #     - '6000:6000'
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgres
+  #     - redis
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev presence # overrides CMD from dockerfile
 
-  chat:
-    build:
-      context: ./
-      dockerfile: ./apps/chat/Dockerfile
-    ports:
-      - '7000:7000'
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - postgres
-      - redis
-      - presence
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev chat # overrides CMD from dockerfile
+  # chat:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/chat/Dockerfile
+  #   ports:
+  #     - '7000:7000'
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgres
+  #     - redis
+  #     - presence
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev chat # overrides CMD from dockerfile
 
-  itineraries:
-    build:
-      context: ./
-      dockerfile: ./apps/itineraries/Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - postgres
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev itineraries # overrides CMD from dockerfile
+  # itineraries:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/itineraries/Dockerfile
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgres
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev itineraries # overrides CMD from dockerfile
 
-  cart:
-    build:
-      context: ./
-      dockerfile: ./apps/cart/Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - postgres
-      - auth
-      - itineraries
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev cart # overrides CMD from dockerfile
+  # cart:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/cart/Dockerfile
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgres
+  #     - auth
+  #     - itineraries
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev cart # overrides CMD from dockerfile
 
-  reservations:
-    build:
-      context: ./
-      dockerfile: ./apps/cart/Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - postgres
-      - auth
-      - cart
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev reservations # overrides CMD from dockerfile
+  # reservations:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/cart/Dockerfile
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - postgres
+  #     - auth
+  #     - cart
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev reservations # overrides CMD from dockerfile
 
-  api:
-    build:
-      context: ./
-      dockerfile: ./apps/api/Dockerfile
-    ports:
-      - '4000:4000'
-    env_file:
-      - .env
-    depends_on:
-      - rabbitmq
-      - auth
-      - presence
-    volumes:
-      - .:/usr/src/app # any change to base folder should be reflected
-      - /usr/src/app/node_modules
-    command: yarn start:dev api
+  # api:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/api/Dockerfile
+  #   ports:
+  #     - '4000:4000'
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - rabbitmq
+  #     - auth
+  #     - presence
+  #   volumes:
+  #     - .:/usr/src/app # any change to base folder should be reflected
+  #     - /usr/src/app/node_modules
+  #   command: yarn start:dev api

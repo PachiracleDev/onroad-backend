@@ -31,6 +31,12 @@ export class BusController {
     return this.busService.createBus(dto);
   }
 
+  @MessagePattern({ cmd: 'getAllBuses' })
+  async getAllBuses(@Ctx() ctx: RmqContext): Promise<BusEntity[]> {
+    this.sharedService.acknowledgeMessage(ctx);
+    return this.busService.getAllBuses();
+  }
+
   @MessagePattern({ cmd: 'updateBus' })
   async updateBus(
     @Ctx() ctx: RmqContext,

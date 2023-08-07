@@ -10,6 +10,10 @@ import { CartController } from './controllers/cart.controller';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronService } from './cron.service';
 import { EmailsService } from '@app/shared/services/emails.service';
+import { PaymentsController } from './controllers/payments.controller';
+import { PaymentsService } from './services/payments.service';
+import { S3Controller } from '@app/shared/controllers/aws-s3.controller';
+import { S3Service } from '@app/shared/services/aws-s3.service';
 
 @Module({
   imports: [
@@ -36,7 +40,9 @@ import { EmailsService } from '@app/shared/services/emails.service';
     ItinerariesController,
     ReservationController,
     CartController,
+    PaymentsController,
+    S3Controller,
   ],
-  providers: [CronService, EmailsService],
+  providers: [CronService, EmailsService, PaymentsService, S3Service],
 })
 export class AppModule {}

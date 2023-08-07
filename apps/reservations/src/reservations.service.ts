@@ -5,6 +5,8 @@ import { ReservationEntity } from '@app/shared/entities/reservation.entity';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import * as uuid from 'uuid';
+import { ItemCart } from 'apps/api/src/dto/create-payment-intent.dto';
+import { sendMicroserviceMessage } from '@app/shared/utils/send-message-microservice';
 
 @Injectable()
 export class ReservationsService implements ReservationServiceInterface {
@@ -12,47 +14,43 @@ export class ReservationsService implements ReservationServiceInterface {
     @Inject('ReservationRepositoryInterface')
     private readonly reservationRepository: ReservationRepositoryInterface,
     @Inject('CART_SERVICE') private readonly cartService: ClientProxy,
+    @Inject('ITINERARIES_SERVICE')
+    private readonly itinerariesService: ClientProxy,
   ) {}
 
-  async createReservation(userId: number): Promise<ReservationEntity[]> {
-    const obs = this.cartService.send(
-      {
-        cmd: 'get-cart',
-      },
-      { userId },
-    );
-    const result = await firstValueFrom(obs).catch((err) => {
-      throw new RpcException(err.message);
-    });
-
-    if (!result) {
-      throw new RpcException('Carrito no encontrado');
-    }
-
-    if (result.items.length === 0) {
-      throw new RpcException('Carrito vacio');
-    }
-
-    result.items.map((item) => {
-      if (item.quantity > item.itinerarie.availableSeats) {
-        throw new RpcException('No hay suficientes asientos disponibles');
-      }
-      return item;
-    });
-
+  async createReservation(
+    userId: number,
+    items: ItemCart[],
+  ): Promise<ReservationEntity[]> {
     const tickets = [];
 
-    for (const item of result.items) {
+    for (const item of items) {
       const ticket = await this.reservationRepository.save({
         customer: userId as any,
-        itinerary: item.itinerarie.id,
-        quantity: item.quantity,
-        seatType: item.seatType,
+        itinerary: item.itinerarieId as any,
+        seats: item.seats,
         ticketId: uuid.v4().slice(0, 8).toUpperCase(),
+        qrCodeImage: '', // SE PODRIA USAR EL SERVICIO DE S3 CON LA LIBRERIA QRCODE PARA LA SUBIDA DE LA IMAGEN
       });
       tickets.push(ticket);
+
+      //OCUPAR ASIENTOS DEL ITINERARIO
+      const obs = sendMicroserviceMessage(
+        this.itinerariesService,
+        'occupy-seats',
+        {
+          seats: item.seats.map((s) => s.number),
+          itineraryId: item.itinerarieId,
+        },
+      );
+
+      await firstValueFrom(obs).catch((err) => {
+        throw new RpcException(err.message);
+      });
     }
+
     const obs2 = this.cartService.send({ cmd: 'clear-cart' }, { userId });
+
     await firstValueFrom(obs2).catch((err) => {
       throw new RpcException(err.message);
     });
@@ -69,6 +67,7 @@ export class ReservationsService implements ReservationServiceInterface {
       where: {
         customer: userId as any,
       },
+      relations: ['itinerary'],
     });
   }
 

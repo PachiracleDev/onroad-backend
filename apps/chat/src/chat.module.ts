@@ -9,6 +9,7 @@ import { MessageRepository } from '@app/shared/respositories/messages.repository
 import { ConversationRepository } from '@app/shared/respositories/conversations.repository';
 
 import { ALL_ENTITIES } from '@app/shared/entities';
+import { ChatController } from './chat.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ALL_ENTITIES } from '@app/shared/entities';
     ),
     TypeOrmModule.forFeature(ALL_ENTITIES),
   ],
-  controllers: [],
+  controllers: [ChatController],
   providers: [
     ChatService,
     ChatGateway,

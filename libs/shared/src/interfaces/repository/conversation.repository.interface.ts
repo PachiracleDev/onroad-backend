@@ -3,7 +3,7 @@ import { BaseInterfaceRepository } from '../../respositories/base/base.interface
 
 export interface ConversationRepositoryInterface
   extends BaseInterfaceRepository<ConversationEntity> {
-  getConversations(userId: number): Promise<ConversationEntity[]>;
+  getConversations(): Promise<ConversationEntity[]>;
   findConversation(
     userId: number,
     senderId: number,

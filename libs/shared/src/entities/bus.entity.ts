@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { OperatorEntity } from './operator.entity';
 import { ItineraryEntity } from './itineraries.entity';
+import { Seat } from 'apps/itineraries/src/dto/create-bus.dto';
 
 @Entity()
 export class BusEntity {
@@ -22,6 +23,18 @@ export class BusEntity {
     name: 'image_url',
   })
   imageUrl: string;
+
+  //EL PORCENTAJE DE INCREMENTO DE CADA TIPO DE ASIENTO (TURISTA, EJECUTIVO, PREMIUM)
+  @Column({
+    name: 'porcentage_increase_seat_type',
+    type: 'jsonb',
+  })
+  porcentageIncreaseSeatType: Record<string, number>;
+
+  @Column({
+    type: 'jsonb',
+  })
+  seats: Seat[];
 
   @ManyToOne(() => OperatorEntity, (operator) => operator.buses)
   @JoinColumn()

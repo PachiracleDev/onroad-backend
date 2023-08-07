@@ -64,6 +64,14 @@ export class AuthService implements AuthServiceInterface {
     return (await this.jwtService.verifyAsync(token)) as Promise<any>;
   }
 
+  async getProfile(userId: number) {
+    const user = await this.userRepository.findOneById(userId);
+    if (!user) {
+      throw new UnauthorizedException('Usuario no encontrado');
+    }
+    return user;
+  }
+
   async register(dto: CreateUserDto): Promise<{ access_token: string }> {
     const existingUser = await this.findByEmail(dto.email);
     if (existingUser) {

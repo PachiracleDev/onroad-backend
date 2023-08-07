@@ -8,6 +8,11 @@ import {
 } from 'typeorm';
 import { BusEntity } from './bus.entity';
 import { ReservationEntity } from './reservation.entity';
+import { Seat } from 'apps/itineraries/src/dto/create-bus.dto';
+
+export class SeatOpen extends Seat {
+  occupied: boolean;
+}
 
 @Entity({ name: 'itineraries' })
 export class ItineraryEntity {
@@ -30,25 +35,18 @@ export class ItineraryEntity {
     name: 'ticket_price',
     type: 'decimal',
   })
-  ticketPrice: number;
+  baseTicketPrice: number;
 
   @Column({
-    name: 'max_capacity',
-    type: 'int',
+    type: 'jsonb',
   })
-  maxCapacity: number;
+  seats: SeatOpen[];
 
   @Column()
   origin: string;
 
   @Column()
   destination: string;
-
-  @Column({
-    name: 'available_seats',
-    type: 'int',
-  })
-  availableSeats: number;
 
   @ManyToOne(() => BusEntity, (bus) => bus.itineraries)
   @JoinColumn()

@@ -8,4 +8,5 @@ export interface ItineraryServiceInterface {
   updateItinerary(dto: UpdateItinerarieDto): Promise<ItineraryEntity>;
   findAllItineraries(dto: FindAllItinerariesDto): Promise<ItineraryEntity[]>;
   getItinerary(id: number): Promise<ItineraryEntity>;
+  occupySeats(seats: number[], itinerarieId: number): Promise<ItineraryEntity>;
 }

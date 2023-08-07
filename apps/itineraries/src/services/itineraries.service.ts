@@ -7,7 +7,7 @@ import { UpdateItinerarieDto } from '../dto/update-itinerarie.dto';
 import { ItinerariesRepositoryInterface } from '@app/shared/interfaces/repository/itineraries.repository.interface';
 import { BusServiceInterface } from '../interfaces/bus.service.interface';
 import { RpcException } from '@nestjs/microservices';
-import { LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+//import { LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 
 @Injectable()
 export class ItineratiesService implements ItineraryServiceInterface {
@@ -24,7 +24,10 @@ export class ItineratiesService implements ItineraryServiceInterface {
     return this.itinerariesRepository.save({
       ...dto,
       bus,
-      availableSeats: dto.maxCapacity,
+      seats: bus.seats.map((s) => ({
+        ...s,
+        occupied: false,
+      })),
     });
   }
 
@@ -39,19 +42,51 @@ export class ItineratiesService implements ItineraryServiceInterface {
   async findAllItineraries(
     dto: FindAllItinerariesDto,
   ): Promise<ItineraryEntity[]> {
-    const now = new Date();
-    return await this.itinerariesRepository.findAll({
+    // const now = new Date();
+    const itineraries = await this.itinerariesRepository.findAll({
       where: {
         origin: dto?.origin,
         destination: dto?.destination,
-        closingTime: MoreThanOrEqual<Date>(now),
-        openingTime: LessThanOrEqual<Date>(now),
+        //? Esto para que solo muestre los itineararies disponibles, pero lo comente por motivos de desarrollo
+        // closingTime: MoreThanOrEqual<Date>(now),
+        // openingTime: LessThanOrEqual<Date>(now),
       },
+      relations: ['bus'],
     });
+
+    return itineraries.map((itinerary) => ({
+      ...itinerary,
+      bus: {
+        imageUrl: itinerary.bus.imageUrl,
+        porcentageIncreaseSeatType: itinerary.bus.porcentageIncreaseSeatType,
+      },
+    })) as ItineraryEntity[];
+  }
+
+  async occupySeats(
+    seatsNumber: number[],
+    itineraryId: number,
+  ): Promise<ItineraryEntity> {
+    const itinerary = await this.itinerariesRepository.findOneById(itineraryId);
+    if (!itinerary) {
+      throw new RpcException('Itinerario no encontrado');
+    }
+
+    const seats = itinerary.seats.map((seat) => {
+      if (seatsNumber.includes(seat.number)) {
+        seat.occupied = true;
+      }
+      return seat;
+    });
+
+    return await this.itinerariesRepository.update(itineraryId, { seats });
   }
 
   async getItinerary(id: number): Promise<ItineraryEntity> {
-    const result = await this.itinerariesRepository.findOneById(id);
+    const result = await this.itinerariesRepository.findByCondition({
+      where: { id },
+      relations: ['bus'],
+    });
     if (!result) {
       throw new RpcException('Itinerario no encontrado');
     }

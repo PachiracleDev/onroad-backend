@@ -6,4 +6,5 @@ export interface BusServiceInterface {
   createBus(dto: CreateBusDto): Promise<BusEntity>;
   updateBus(dto: UpdateBusDto): Promise<BusEntity>;
   getBus(id: number): Promise<BusEntity>;
+  getAllBuses(): Promise<BusEntity[]>;
 }

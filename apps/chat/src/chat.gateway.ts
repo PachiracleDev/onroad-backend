@@ -28,7 +28,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   async handleConnection(socket: Socket) {
-    const jwt = socket.handshake.headers?.authorization.split(' ')[1] ?? null;
+    //?ESTO PARA CUANDO ESTES USANDO SOCKET-IO-CLIENT EN EL FRONTEND
+    const jwt = socket.handshake.auth.access;
+
+    //??ESTO PARA POSTMAN
+    // const jwt = socket.handshake.headers?.authorization.split(' ')[1] ?? null;
 
     if (!jwt) {
       this.handleDisconnect(socket);
@@ -112,8 +116,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     const user = socket.data.user;
 
     if (!user) return;
+    //ESTO EN POSTMAN
+    // const message = JSON.parse(newMessage as any);
 
-    const message = JSON.parse(newMessage as any);
+    //ESTO EN SOCKET-IO-CLIENT
+    const message = newMessage as any;
 
     const createdMessage = await this.chatService.createMessage(
       message,

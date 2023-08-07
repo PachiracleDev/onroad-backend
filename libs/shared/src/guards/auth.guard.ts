@@ -50,7 +50,6 @@ export class AuthGuard implements CanActivate {
         return of(isJwtValid);
       }),
       catchError(() => {
-        console.log('error');
         throw new UnauthorizedException();
       }),
     );

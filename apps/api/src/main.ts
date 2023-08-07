@@ -5,20 +5,21 @@ import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import helmet from 'helmet';
+import rawBodyMiddleware from './middleware/rawBody.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   app.enableCors({
-    origin: configService.get('IS_PRODUCTION')
-      ? configService.get('INTERNAL_API_URL')
-      : '*',
+    origin: '*',
   });
   app.use(helmet());
   app.enableVersioning({
     defaultVersion: '1',
     type: 0, // ESTO ES PARA HABILITAR EL VERSIONAMIENTO DE TIPO URI (http://localhost:4000/v1)
   });
+
+  app.use(rawBodyMiddleware());
 
   const externalDescription =
     'Hola bienvenido a la API de ONROAD, Espero les guste';

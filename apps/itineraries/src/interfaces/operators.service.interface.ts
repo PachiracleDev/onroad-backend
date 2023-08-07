@@ -7,4 +7,5 @@ export interface OperatorServiceInterface {
   updateOperator(dto: UpdateOperatorDto): Promise<OperatorEntity>;
   deleteOperator(id: number): Promise<OperatorEntity>;
   getOperator(id: number): Promise<OperatorEntity>;
+  getAllOperators(): Promise<OperatorEntity[]>;
 }

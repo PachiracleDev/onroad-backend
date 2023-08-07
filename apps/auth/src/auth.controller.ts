@@ -9,8 +9,8 @@ import {
 import { SharedService } from '@app/shared/services/shared.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SigninDto } from './dto/signin-dto';
-import { JwtGuard } from './guards/jwt.guard';
 import { AuthServiceInterface } from './interfaces/auth.service.interface';
+import { JwtGuard } from './guards/jwt.guard';
 
 @Controller()
 export class AuthController {
@@ -30,6 +30,7 @@ export class AuthController {
   @MessagePattern({ cmd: 'signin' })
   async signin(@Ctx() ctx: RmqContext, @Payload() dto: SigninDto) {
     this.sharedService.acknowledgeMessage(ctx);
+
     return this.authService.login(dto);
   }
 
@@ -44,6 +45,12 @@ export class AuthController {
   async decodeJwt(@Ctx() ctx: RmqContext, @Payload() payload: { jwt: string }) {
     this.sharedService.acknowledgeMessage(ctx);
     return this.authService.decodeJwtToken(payload.jwt);
+  }
+
+  @MessagePattern({ cmd: 'profile' })
+  async getProfile(@Ctx() ctx: RmqContext, @Payload() payload: { id: number }) {
+    this.sharedService.acknowledgeMessage(ctx);
+    return this.authService.getProfile(payload.id);
   }
 
   @MessagePattern({ cmd: 'get-onroads-team' })

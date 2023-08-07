@@ -11,11 +11,14 @@ import { SharedService } from '@app/shared/services/shared.service';
 @Module({
   imports: [
     DatabaseModule,
-
     TypeOrmModule.forFeature(ALL_ENTITIES),
     SharedModule,
     SharedModule.registerRmq('CART_SERVICE', process.env.RABBITMQ_CART_QUEUE),
     SharedModule.registerRmq('AUTH_SERVICE', process.env.RABBITMQ_AUTH_QUEUE),
+    SharedModule.registerRmq(
+      'ITINERARIES_SERVICE',
+      process.env.RABBITMQ_ITINERARIES_QUEUE,
+    ),
   ],
   controllers: [ReservationsController],
   providers: [
