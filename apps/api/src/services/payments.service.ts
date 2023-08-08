@@ -91,7 +91,7 @@ export class PaymentsService {
   async constructEvent(rawBody: any, signature: string) {
     try {
       const webhookSecret =
-        'whsec_b8e16ef6f53819268792e53ae6b4a079dde63e76be3f96c1a8cea1095e18d72e';
+        'YOY-WEBHOOK-LO-GENERAS-CON-EL-CLI-DE-STRIPE';
       const event = this.stripe.webhooks.constructEvent(
         rawBody,
         signature,
